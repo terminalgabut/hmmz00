@@ -1,0 +1,17 @@
+{
+  "kalam": [
+    {"q": "Apa definisi kalam menurut Jurumiyah?", "o": ["Suara tanpa makna","Lafazh tersusun, mufid, wad'i","Tulisan tanpa lafazh"], "a": 1},
+    {"q": "Syarat kalam ada berapa?", "o": ["2","3","4"], "a": 2},
+    {"q": "Kalam harus memberi faidah?", "o": ["Ya","Tidak"], "a": 0}
+  ],
+  "kalimah": [
+    {"q":"Kalimah terbagi menjadi?", "o":["2","3","4"], "a":1},
+    {"q":"Contoh fi'il?", "o":["ذهب","في","محمد"], "a":0},
+    {"q":"Contoh huruf?", "o":["في","كتب","طالب"], "a":0}
+  ],
+  "isim": [
+    {"q":"Ciri isim bisa dimasuki...?", "o":["أل","قد","سوف"], "a":0},
+    {"q":"Isim biasanya bisa di-tanwinkan?", "o":["Ya","Tidak"], "a":0},
+    {"q":"Isim bisa majrur oleh huruf...?", "o":["جر","نصب","جزم"], "a":0}
+  ]
+}
