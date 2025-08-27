@@ -1,0 +1,140 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+QUESTION_BANK = {
+    "kalam": [
+        {
+            "q": "Definisi kalām menurut nahwu (ringkas) adalah:",
+            "choices": [
+                "Lafaz yang tersusun, memberi faidah sempurna, berdasarkan wad'i (bahasa Arab).",
+                "Satu kata yang berdiri sendiri tanpa konteks.",
+                "Tulisan di kertas yang bermakna.",
+                "Isyarat tangan yang dimengerti."
+            ],
+            "a": 0,
+            "ex": "Kalam: lafẓ murakkab (lebih dari satu kata), mufīd (mendatangkan faedah sempurna), wad'i (berbahasa Arab)."
+        },
+        {
+            "q": "Syarat kalām menurut Jurumiyah ada berapa?",
+            "choices": ["2", "3", "4", "5"],
+            "a": 2,
+            "ex": "Ada 4: (1) lafẓ, (2) murakkab, (3) mufīd, (4) wad'i."
+        },
+        {
+            "q": "Mana yang termasuk kalām?",
+            "choices": ["زيدٌ", "زيدٌ قائمٌ", "في البيتِ", "إذا جاء زيدٌ ..."],
+            "a": 1,
+            "ex": "'زيدٌ قائمٌ' murakkab dan mufīd → kalām."
+        }
+    ],
+    "kalimah": [
+        {
+            "q": "Apa definisi kalimah?",
+            "choices": [
+                "Lafaz tunggal yang memiliki makna.",
+                "Susunan lebih dari satu kata.",
+                "Tulisan tanpa suara.",
+                "Isyarat tangan yang dipahami."
+            ],
+            "a": 0,
+            "ex": "Kalimah = satu lafẓ yang memiliki makna."
+        },
+        {
+            "q": "Kalimah terbagi menjadi berapa?",
+            "choices": ["2", "3", "4", "5"],
+            "a": 1,
+            "ex": "Kalimah terbagi menjadi 3: isim, fi’il, harf."
+        }
+    ],
+    "isim": [
+        {
+            "q": "Ciri isim yang paling jelas adalah?",
+            "choices": ["Bisa dimasuki أل", "Didahului قد", "Selalu diawali huruf ya", "Tidak bisa tanwin"],
+            "a": 0,
+            "ex": "Salah satu ciri isim: bisa dimasuki أل ta’rif."
+        },
+        {
+            "q": "Isim bisa di-tanwinkan?",
+            "choices": ["Ya", "Tidak"],
+            "a": 0,
+            "ex": "Ya, isim bisa dimasuki tanwin (selama bukan ma‘rifah atau mamnu‘ minash-sharf)."
+        },
+        {
+            "q": "Isim bisa majrur oleh huruf ...",
+            "choices": ["جر", "نصب", "جزم"],
+            "a": 0,
+            "ex": "Ciri isim: bisa majrur oleh huruf jar."
+        }
+    ],
+    "fiil": [
+        {
+            "q": "Fi’il māḍī biasanya ditandai dengan?",
+            "choices": ["Tā’ ta’nīts (تاء التأنيث)", "أل", "Tanwin"],
+            "a": 0,
+            "ex": "Fi’il māḍī bisa dikenali dengan tā’ ta’nīts sakinah."
+        },
+        {
+            "q": "Fi’il mudhāri’ bisa dikenali dengan huruf?",
+            "choices": ["سوف", "أل", "Huruf mudhāri‘ (أ، ن، ي، ت)"],
+            "a": 2,
+            "ex": "Fi’il mudhāri‘ diawali salah satu huruf mudhāri‘: أ، ن، ي، ت."
+        },
+        {
+            "q": "Nun taukīd masuk pada?",
+            "choices": ["Fi’il mudhāri‘", "Isim", "Huruf"],
+            "a": 0,
+            "ex": "Nun taukīd hanya masuk pada fi’il mudhāri‘."
+        }
+    ],
+    "huruf": [
+        {
+            "q": "Huruf tidak memiliki ...?",
+            "choices": ["Makna sendiri", "Amal", "Tanda isim/fi’il"],
+            "a": 2,
+            "ex": "Huruf tidak punya tanda isim/fi’il, ia hanya berfungsi ketika masuk pada lafẓ lain."
+        },
+        {
+            "q": "Huruf berfungsi sebagai?",
+            "choices": ["Penghubung", "Pokok kalimat", "Isim"],
+            "a": 0,
+            "ex": "Huruf berfungsi sebagai penghubung dan tidak berdiri sendiri."
+        }
+    ],
+    "hurufjar": [
+        {
+            "q": "Sebutkan salah satu huruf jar:",
+            "choices": ["من", "محمد", "ذهب", "قائم"],
+            "a": 0,
+            "ex": "Contoh huruf jar: من، إلى، عن، على، في، ربّ، الباء، الكاف، اللام."
+        },
+        {
+            "q": "Huruf jar membuat isim dibaca ...",
+            "choices": ["Rafa‘", "Nasab", "Jar"],
+            "a": 2,
+            "ex": "Huruf jar menyebabkan isim setelahnya menjadi majrur."
+        }
+    ],
+    "hurufqasam": [
+        {
+            "q": "Huruf qasam ada berapa?",
+            "choices": ["2", "3", "4"],
+            "a": 1,
+            "ex": "Huruf qasam ada 3: waw (وَ), ba’ (بِ), ta’ (تَ)."
+        },
+        {
+            "q": "Contoh qasam dengan waw?",
+            "choices": ["والله", "بالله", "تالله"],
+            "a": 0,
+            "ex": "Contoh qasam dengan waw: والله."
+        }
+    ]
+}
+
+
+@app.route("/get_questions", methods=["GET"])
+def get_questions():
+    topic = request.args.get("topic", "").lower()
+    if topic in QUESTION_BANK:
+        return jsonify(QUESTION_BANK[topic])
+    return jsonify({"error": "Topic not found"}), 404
