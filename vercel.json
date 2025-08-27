@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "quiz_api.py", "use": "@vercel/python" },
+    { "src": "index.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/get_questions", "dest": "quiz_api.py" },
+    { "src": "/", "dest": "index.html" }
+  ]
+}
