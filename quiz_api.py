@@ -9,6 +9,25 @@ Quiz Jurumiyah - Bab Kalam (الكلام)
 
 Author: ChatGPT (GPT-5)
 """
+from flask import Flask, request, jsonify
+import json
+
+app = Flask(__name__)
+
+# Load question bank
+with open("questions.json", "r", encoding="utf-8") as f:
+    QUESTIONS = json.load(f)
+
+@app.route("/get_questions", methods=["GET"])
+def get_questions():
+    topic = request.args.get("topic")
+    if topic in QUESTIONS:
+        return jsonify(QUESTIONS[topic])
+    return jsonify({"error": "Topic not found"}), 404
+
+@app.route("/")
+def home():
+    return "Quiz API is running!"
 
 import random
 import json
