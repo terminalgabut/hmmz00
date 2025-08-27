@@ -1,17 +1,62 @@
 {
   "kalam": [
-    {"q": "Apa definisi kalam menurut Jurumiyah?", "o": ["Suara tanpa makna","Lafazh tersusun, mufid, wad'i","Tulisan tanpa lafazh"], "a": 1},
-    {"q": "Syarat kalam ada berapa?", "o": ["2","3","4"], "a": 2},
-    {"q": "Kalam harus memberi faidah?", "o": ["Ya","Tidak"], "a": 0}
+    {"q": "Apa definisi kalam menurut Jurumiyah?", "o": ["Suara tanpa makna", "Lafazh tersusun, mufid, wad'i", "Tulisan tanpa lafazh"], "a": 1},
+    {"q": "Syarat kalam ada berapa?", "o": ["2", "3", "4"], "a": 2},
+    {"q": "Syarat kalam yang pertama adalah?", "o": ["Murakkab", "Lafazh", "Wad'i"], "a": 1},
+    {"q": "Syarat kalam yang kedua adalah?", "o": ["Mufid", "Wad'i", "Murakkab"], "a": 2},
+    {"q": "Syarat kalam yang ketiga adalah?", "o": ["Mufid", "Wad'i", "Lafazh"], "a": 0},
+    {"q": "Syarat kalam yang keempat adalah?", "o": ["Murakkab", "Lafazh", "Wad'i"], "a": 2},
+    {"q": "Apakah 'إذا قام زيد' disebut kalam?", "o": ["Ya", "Tidak"], "a": 1},
+    {"q": "Kalimat 'قام زيد' termasuk kalam?", "o": ["Ya", "Tidak"], "a": 0},
+    {"q": "Kalimat minimal terdiri dari?", "o": ["1 kata", "2 kata", "3 kata"], "a": 1},
+    {"q": "Tujuan kalam bagi pendengar adalah?", "o": ["Memberi faidah", "Membingungkan", "Tidak jelas"], "a": 0}
   ],
   "kalimah": [
-    {"q":"Kalimah terbagi menjadi?", "o":["2","3","4"], "a":1},
-    {"q":"Contoh fi'il?", "o":["ذهب","في","محمد"], "a":0},
-    {"q":"Contoh huruf?", "o":["في","كتب","طالب"], "a":0}
+    {"q": "Kalimah terbagi menjadi berapa?", "o": ["2", "3", "4"], "a": 1},
+    {"q": "Kalimah ada tiga, yaitu?", "o": ["Isim, Fi'il, Harf", "Isim, Fi'il, Jumlah", "Fi'il, Harf, Kalam"], "a": 0},
+    {"q": "Contoh isim adalah?", "o": ["كتاب", "ذهب", "في"], "a": 0},
+    {"q": "Contoh fi'il adalah?", "o": ["في", "ذهب", "محمد"], "a": 1},
+    {"q": "Contoh harf adalah?", "o": ["ذهب", "محمد", "في"], "a": 2},
+    {"q": "Apa ciri isim?", "o": ["Bisa dimasuki أل dan tanwin", "Bisa dimasuki سوف", "Selalu fi’il"], "a": 0},
+    {"q": "Apa ciri fi'il?", "o": ["Bisa dimasuki قد, س, سوف", "Bisa tanwin", "Dibaca jar"], "a": 0},
+    {"q": "Apa ciri harf?", "o": ["Tidak punya makna kecuali bersama", "Punya makna sendiri", "Bisa tanwin"], "a": 0},
+    {"q": "Jumlah kalimah minimal dalam kalam?", "o": ["1", "2", "3"], "a": 1},
+    {"q": "Dalam kalam, kalimah berfungsi sebagai?", "o": ["Unit penyusun kalam", "Huruf tambahan", "Tidak berfaedah"], "a": 0}
   ],
   "isim": [
-    {"q":"Ciri isim bisa dimasuki...?", "o":["أل","قد","سوف"], "a":0},
-    {"q":"Isim biasanya bisa di-tanwinkan?", "o":["Ya","Tidak"], "a":0},
-    {"q":"Isim bisa majrur oleh huruf...?", "o":["جر","نصب","جزم"], "a":0}
+    {"q": "Ciri isim bisa dimasuki...?", "o": ["أل", "قد", "سوف"], "a": 0},
+    {"q": "Isim biasanya bisa di-tanwinkan?", "o": ["Ya", "Tidak"], "a": 0},
+    {"q": "Isim bisa majrur oleh huruf...?", "o": ["جر", "نصب", "جزم"], "a": 0},
+    {"q": "Contoh isim nakirah?", "o": ["كتاب", "الكتاب", "هذا"], "a": 0},
+    {"q": "Contoh isim ma’rifah?", "o": ["محمد", "رجل", "كتاب"], "a": 0},
+    {"q": "Contoh isim yang menunjukkan tempat?", "o": ["مدرسة", "جلس", "في"], "a": 0},
+    {"q": "Kata 'الطالب' termasuk?", "o": ["Isim ma’rifah", "Isim nakirah", "Fi’il"], "a": 0},
+    {"q": "Ciri isim lain selain أل?", "o": ["Bisa dimasuki tanwin", "Bisa dimasuki قد", "Bisa dimasuki سوف"], "a": 0},
+    {"q": "Isim terbagi berapa macam menurut makrifah-nakirah?", "o": ["2", "3", "4"], "a": 0},
+    {"q": "Kalimat 'الكتاب مفيد' kata 'الكتاب' berfungsi sebagai?", "o": ["Mubtada’", "Khabar", "Fi’il"], "a": 0}
+  ],
+  "huruf_jar": [
+    {"q": "Apa fungsi huruf jar?", "o": ["Menjadikan isim sesudahnya majrur", "Membentuk fi’il", "Mufid tanpa isim"], "a": 0},
+    {"q": "Contoh huruf jar adalah?", "o": ["من، إلى، على، في، ب", "قد، سوف، س", "أل، تنوين"], "a": 0},
+    {"q": "Kata sesudah huruf jar dibaca?", "o": ["Raf'", "Nasb", "Jar"], "a": 2},
+    {"q": "Kalimat 'ذهبت إلى المدرسة' kata 'المدرسة' dibaca?", "o": ["Raf’", "Jar", "Nasb"], "a": 1},
+    {"q": "Kalimat 'زيد في الفصل' kata 'الفصل' dibaca?", "o": ["Raf’", "Jar", "Nasb"], "a": 1},
+    {"q": "Huruf 'من' biasanya menunjukkan?", "o": ["Asal/mulai", "Tujuan", "Perbandingan"], "a": 0},
+    {"q": "Huruf 'إلى' biasanya menunjukkan?", "o": ["Tujuan/akhir", "Asal", "Penegasan"], "a": 0},
+    {"q": "Huruf 'في' biasanya menunjukkan?", "o": ["Tempat/waktu", "Sebab", "Perbandingan"], "a": 0},
+    {"q": "Huruf 'على' biasanya menunjukkan?", "o": ["Di atas/atasan", "Asal", "Akhir"], "a": 0},
+    {"q": "Huruf 'ب' biasanya menunjukkan?", "o": ["Penyertaan/alat", "Arah", "Tujuan"], "a": 0}
+  ],
+  "huruf_qasam": [
+    {"q": "Huruf qasam digunakan untuk?", "o": ["Sumpah", "Pertanyaan", "Seruan"], "a": 0},
+    {"q": "Contoh huruf qasam adalah?", "o": ["والله، تالله، بالله", "قد، سوف، س", "من، إلى، في"], "a": 0},
+    {"q": "Kalimat 'والله لأدرسن' arti huruf qasam-nya?", "o": ["Demi Allah", "Dengan Allah", "Atas Allah"], "a": 0},
+    {"q": "Huruf qasam biasanya diikuti oleh?", "o": ["Isim majrur", "Fi’il mudhari’", "Fi’il madhi"], "a": 0},
+    {"q": "Jawab sumpah biasanya menggunakan?", "o": ["لام جواب القسم", "قد", "إن"], "a": 0},
+    {"q": "Kalimat 'تالله لأجتهدن' kata 'تالله' termasuk?", "o": ["Huruf qasam", "Isim", "Fi’il"], "a": 0},
+    {"q": "Kalimat 'بالله لن أترك الصلاة' kata 'بالله' termasuk?", "o": ["Huruf qasam", "Isim", "Fi’il"], "a": 0},
+    {"q": "Huruf qasam menjadikan isim sesudahnya dibaca?", "o": ["Jar", "Nasb", "Raf’"], "a": 0},
+    {"q": "Jika huruf qasam dihilangkan, sumpah masih bisa dipahami?", "o": ["Ya", "Tidak"], "a": 0},
+    {"q": "Dalam bahasa Arab, qasam berfungsi untuk?", "o": ["Menguatkan ucapan", "Membentuk fi’il", "Mengganti mubtada’"], "a": 0}
   ]
 }
