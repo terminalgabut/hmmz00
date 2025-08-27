@@ -1,91 +1,424 @@
-
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="id" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <title>Kuis Nahwu</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz Jurumiyah — Bab Kalam (الكلام)</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; }
-    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h1 { text-align: center; margin-bottom: 20px; }
-    select, button { padding: 10px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
-    .question { margin: 20px 0; font-size: 18px; font-weight: bold; }
-    .options label { display: block; padding: 8px; background: #f1f1f1; margin: 6px 0; border-radius: 6px; cursor: pointer; }
-    .options input { margin-right: 10px; }
-    .result { margin-top: 20px; font-size: 20px; font-weight: bold; text-align: center; }
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --accent:#0b79d0; --ok:#e8f8ef; --err:#fff0f0;
+      --muted:#6b7280;
+    }
+    body{font-family:Inter,system-ui,Arial, sans-serif;background:var(--bg);margin:0;color:#111}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(12,30,50,0.06)}
+    h1{margin:0;font-size:20px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    select,input[type=number]{padding:8px;border-radius:8px;border:1px solid #ddd}
+    button{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.ghost{background:#f1f5f9;color:#111;border:1px solid #e2e8f0}
+    .meta{display:flex;gap:12px;align-items:center;margin-top:10px;color:var(--muted)}
+    .question{font-weight:700;margin-top:16px;font-size:18px}
+    .arab{direction:rtl;font-family: "Scheherazade New", "Amiri", serif;font-size:20px}
+    .choices{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .choice{padding:12px;border-radius:8px;border:1px solid #e6eef9;background:#fbfdff;cursor:pointer}
+    .choice.correct{background:var(--ok);border-color:#b6f0c8}
+    .choice.wrong{background:var(--err);border-color:#ffcccc}
+    .explain{margin-top:12px;padding:12px;border-left:4px solid #e6e9ef;background:#fbfbfd;border-radius:8px;color:#333}
+    .hidden{display:none}
+    .footer{margin-top:14px;color:var(--muted);font-size:13px}
+    .row{display:flex;gap:8px;align-items:center}
+    pre{white-space:pre-wrap;word-break:break-word}
+    .result-card{padding:12px;border-radius:8px;background:#fafcff;margin-top:12px}
+    a.link{color:var(--accent);text-decoration:none}
+    /* small responsive */
+    @media (max-width:640px){
+      .controls{flex-direction:column;align-items:stretch}
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>📘 Kuis Nahwu</h1>
-  <label for="topic">Pilih Bab:</label>
-  <select id="topic">
-    <option value="kalam">Bab 1: Kalam</option>
-    <option value="kalimah">Bab 2: Kalimah</option>
-    <option value="isim">Bab 3: Ciri-Ciri Isim</option>
-    <option value="fiil">Bab 4: Ciri-Ciri Fi'il</option>
-    <option value="huruf">Bab 5: Ciri-Ciri Huruf</option>
-    <option value="hurufjar">Bab 6: Huruf Jar</option>
-    <option value="hurufqasam">Bab 7: Huruf Qasam</option>
-  </select>
-  <button onclick="startQuiz()">Mulai</button>
+  <div class="wrap">
+    <div class="card">
+      <h1>Quiz Jurumiyah — Bab Kalam (الكلام)</h1>
+      <div class="meta">Materi: Bab 1 — Kalam. Sumber: pedoman Ajurrumiyah (disederhanakan).</div>
 
-  <div id="quiz" style="display:none;">
-    <div class="question" id="question"></div>
-    <div class="options" id="options"></div>
-    <button onclick="nextQuestion()">Next</button>
-    <div class="result" id="result"></div>
+      <div class="controls">
+        <label>Jumlah soal:
+          <input id="numQ" type="number" value="10" min="1" max="10" style="width:80px;margin-left:8px">
+        </label>
+        <button id="startBtn">Mulai Kuis</button>
+        <button id="restartBtn" class="ghost hidden">Ulangi</button>
+        <div style="margin-left:auto;color:var(--muted)">Status: <span id="status">Siap</span></div>
+      </div>
+
+      <div id="quizArea" class="hidden">
+        <div class="meta" style="justify-content:space-between">
+          <div>Topik: <strong>Kalam (الكلام)</strong></div>
+          <div id="progress">0 / 0</div>
+        </div>
+
+        <div id="qBlock">
+          <div class="question" id="qText"></div>
+          <div class="arab" id="qArab"></div>
+          <div class="choices" id="choices"></div>
+          <div class="row" style="margin-top:12px">
+            <button id="nextBtn">Berikutnya</button>
+            <button id="skipBtn" class="ghost">Lewati (tandai salah)</button>
+            <button id="endBtn" class="ghost">Akhiri</button>
+            <div style="margin-left:auto;color:var(--muted)">Skor saat ini: <span id="score">0</span></div>
+          </div>
+          <div id="explain" class="explain hidden"></div>
+        </div>
+      </div>
+
+      <div id="resultArea" class="hidden">
+        <h3>Hasil Kuis</h3>
+        <div class="result-card">
+          <div id="summary"></div>
+          <div id="grade" style="margin-top:6px;font-weight:700"></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="downloadBtn">Download Hasil (JSON)</button>
+          <button id="backBtn" class="ghost">Kembali ke Menu</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <details>
+            <summary>Detail jawaban</summary>
+            <div id="details" style="margin-top:10px"></div>
+          </details>
+        </div>
+      </div>
+
+      <div class="footer">
+        <small>Catatan: Soal & penjelasan sesuai dengan data yang kamu berikan (tidak diubah).</small>
+      </div>
+    </div>
   </div>
-</div>
 
 <script>
-let currentTopic = "";
-let currentIndex = 0;
-let score = 0;
-let total = 0;
+/* ====================================================
+   Question bank — KALAM (copy persis dari QUESTION_BANK)
+   ==================================================== */
+const QUESTION_BANK = [
+  {
+    "q":"Definisi kalām menurut nahwu (ringkas) adalah:",
+    "choices":[
+      "Lafaz yang tersusun, memberi faidah sempurna, berdasarkan wad'i (bahasa Arab).",
+      "Satu kata yang berdiri sendiri tanpa konteks.",
+      "Tulisan di kertas yang bermakna.",
+      "Isyarat tangan yang dimengerti."
+    ],
+    "a":0,
+    "ex":"Kalam menurut nahwu: lafẓ murakkab (lebih dari satu kata), mufīd (mendatangkan faedah sempurna), wad'i (berbahasa Arab)."
+  },
+  {
+    "q":"Mana yang memenuhi syarat kalām?",
+    "choices":["زيدٌ","زيدٌ قائمٌ","في البيتِ","إذا جاء زيدٌ ..."],
+    "a":1,
+    "ex":"'زيدٌ قائمٌ' murakkab dan mufīd → kalām. 'زيدٌ' hanya kalimah. 'إذا جاء زيدٌ...' menggantung (tidak mufīd)."
+  },
+  {
+    "q":"Syarat 'lafaz' dalam definisi kalām maksudnya:",
+    "choices":[
+      "Harus terdengar (diucapkan), bukan hanya tertulis.",
+      "Boleh hanya tertulis di kertas.",
+      "Bisa berupa isyarat tangan.",
+      "Khusus untuk tulisan suci saja."
+    ],
+    "a":0,
+    "ex":"Lafaz = suara yang keluar dari mulut dan terdengar; definisi nahwu menekankan pengucapan, bukan sekadar tulisan."
+  },
+  {
+    "q":"Mengapa 'إذا جاء زيدٌ...' tidak disebut kalām sempurna?",
+    "choices":[
+      "Karena susunan salah.",
+      "Karena mengandung huruf yang tidak dikenal.",
+      "Karena maknanya menggantung; pendengar menunggu kelanjutan.",
+      "Karena bukan bahasa Arab."
+    ],
+    "a":2,
+    "ex":"Jika dimulai dengan حرف شرط seperti إذا, kalimat menjadi syarthiyah dan makna belum sempurna."
+  },
+  {
+    "q":"Manakah yang bukan syarat kalām menurut definisi klasik?",
+    "choices":[
+      "Lafaz diucapkan",
+      "Tersusun minimal dua kata",
+      "Mengandung kata kerja (fi'il)",
+      "Memberi faedah sempurna"
+    ],
+    "a":2,
+    "ex":"Kalam bisa berupa jumlah ismiyyah (tanpa fi'il). Jadi 'mengandung fi'il' bukan syarat."
+  },
+  {
+    "q":"Contoh kalām isimiyyah (nominal sentence):",
+    "choices":["ذهبَ زيدٌ","زيدٌ قائمٌ","في السوقِ","لم يأتِ"],
+    "a":1,
+    "ex":"Jumlah ismiyyah: 'زيدٌ قائمٌ' (mubtada' + khabar) — kalām."
+  },
+  {
+    "q":"Kalām harus 'berdasarkan wad'i' maksudnya adalah:",
+    "choices":[
+      "Berbahasa Arab sesuai ketentuan bahasa.",
+      "Ditulis rapi di kertas.",
+      "Diucapkan dengan intonasi tinggi.",
+      "Hanya untuk kalimat suci."
+    ],
+    "a":0,
+    "ex":"Wad'i = berdasarkan penetapan bahasa Arab (aturan bahasa). Kalimat dalam bahasa lain tidak disebut kalām menurut ilmu nahwu."
+  },
+  {
+    "q":"Jika seseorang menulis 'زيد' di papan tulis tetapi tidak mengucapkannya, itu disebut:",
+    "choices":[
+      "Lafaz (lafẓ)",
+      "Kalimah (الكلمة)",
+      "Kalam (الكلام)",
+      "Harf saja"
+    ],
+    "a":1,
+    "ex":"Teks tertulis bukan lafaz (suara). 'زيد' sebagai satu kata adalah kalimah."
+  },
+  {
+    "q":"Dalam praktikum nahwu, mengapa penting membedakan kalām dan kalimah?",
+    "choices":[
+      "Agar bisa menerjemahkan ke bahasa lain lebih cepat.",
+      "Karena aturan i'rab bergantung apakah itu kalām (susunan) atau kalimah (tunggal).",
+      "Supaya bisa menulis lebih indah.",
+      "Agar dapat membuat puisi."
+    ],
+    "a":1,
+    "ex":"Analisis i'rab memerlukan identifikasi apakah sebuah unit adalah kalām (kalimat) atau kalimah (kata tunggal)."
+  },
+  {
+    "q":"Kalām yang mengandung huruf syarth (seperti إِذَا) biasanya:",
+    "choices":[
+      "Langsung mufīd tanpa lanjutan.",
+      "Belum sempurna maknanya hingga klausa syarat dipenuhi.",
+      "Bukan bahasa Arab.",
+      "Harus diakhiri tanda tanya."
+    ],
+    "a":1,
+    "ex":"Huruf syarth membuat kalam menjadi syarthiyah; pendengar menunggu kelanjutan."
+  }
+];
 
-function startQuiz(){
-  currentTopic = document.getElementById("topic").value;
-  fetch(`/start?topic=${currentTopic}`)
-    .then(r=>r.json())
-    .then(data => {
-      currentIndex = 0;
-      score = 0;
-      total = data.total;
-      document.getElementById("quiz").style.display = "block";
-      document.getElementById("result").innerHTML = "";
-      showQuestion();
-    });
-}
+/* ====================================================
+   App logic
+   ==================================================== */
+const startBtn = document.getElementById('startBtn');
+const restartBtn = document.getElementById('restartBtn');
+const statusEl = document.getElementById('status');
+const quizArea = document.getElementById('quizArea');
+const qText = document.getElementById('qText');
+const qArab = document.getElementById('qArab');
+const choicesDiv = document.getElementById('choices');
+const progress = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+const explainDiv = document.getElementById('explain');
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const endBtn = document.getElementById('endBtn');
+const resultArea = document.getElementById('resultArea');
+const summary = document.getElementById('summary');
+const gradeEl = document.getElementById('grade');
+const downloadBtn = document.getElementById('downloadBtn');
+const backBtn = document.getElementById('backBtn');
+const detailsDiv = document.getElementById('details');
+
+let questions = [];
+let order = [];
+let cur = 0;
+let score = 0;
+let answers = []; // store objects: {q, your, correct, correct_flag, ex}
+
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+
+startBtn.addEventListener('click', ()=>{
+  const n = Math.max(1, Math.min(10, parseInt(document.getElementById('numQ').value)||10));
+  // clone questions (do not modify original)
+  questions = JSON.parse(JSON.stringify(QUESTION_BANK));
+  shuffle(questions);
+  questions = questions.slice(0, n);
+  order = Array.from({length:questions.length}, (_,i)=>i);
+  // shuffle order as well (random order of questions)
+  shuffle(order);
+  cur = 0;
+  score = 0;
+  answers = [];
+  scoreEl.textContent = score;
+  statusEl.textContent = 'Sedang kuis';
+  quizArea.classList.remove('hidden');
+  resultArea.classList.add('hidden');
+  restartBtn.classList.add('hidden');
+  showQuestion();
+});
+
+restartBtn.addEventListener('click', ()=>{
+  // reset to menu
+  quizArea.classList.add('hidden');
+  resultArea.classList.add('hidden');
+  statusEl.textContent = 'Siap';
+  restartBtn.classList.add('hidden');
+});
 
 function showQuestion(){
-  fetch(`/question?topic=${currentTopic}&index=${currentIndex}`)
-    .then(r=>r.json())
-    .then(q => {
-      document.getElementById("question").innerText = q.q;
-      let opts = "";
-      q.o.forEach((opt,i)=>{
-        opts += `<label><input type='radio' name='opt' value='${i}'> ${opt}</label>`;
-      });
-      document.getElementById("options").innerHTML = opts;
-    });
+  if(cur >= order.length){
+    finishQuiz();
+    return;
+  }
+  const qi = questions[order[cur]];
+  progress.textContent = `${cur+1} / ${order.length}`;
+  qText.textContent = (cur+1) + ". " + qi.q;
+  // if any Arabic-specific sample answer (we keep original strings)
+  // show Arabic sample if any choice contains Arabic letters
+  const arabChoices = qi.choices.some(c => /[\u0600-\u06FF]/.test(c));
+  qArab.textContent = arabChoices ? "" : ""; // not used, but placeholder for RTL if needed
+  // build choices
+  choicesDiv.innerHTML = '';
+  qi.choices.forEach((ch, idx)=>{
+    const b = document.createElement('div');
+    b.className = 'choice';
+    b.tabIndex = 0;
+    b.innerText = ch;
+    b.onclick = ()=> selectAnswer(idx);
+    b.onkeypress = (e)=>{ if(e.key === 'Enter') selectAnswer(idx); };
+    choicesDiv.appendChild(b);
+  });
+  explainDiv.classList.add('hidden');
+  explainDiv.innerHTML = '';
 }
 
-function nextQuestion(){
-  let selected = document.querySelector('input[name="opt"]:checked');
-  if(!selected) return alert("Pilih jawaban dulu!");
-  fetch(`/answer?topic=${currentTopic}&index=${currentIndex}&ans=${selected.value}`)
-    .then(r=>r.json())
-    .then(res => {
-      if(res.correct) score++;
-      currentIndex++;
-      if(currentIndex < total){
-        showQuestion();
-      } else {
-        document.getElementById("result").innerHTML = `Skor akhir: ${score}/${total}`;
-      }
-    });
+function selectAnswer(choiceIdx){
+  const qi = questions[order[cur]];
+  // disable further clicks
+  Array.from(choicesDiv.children).forEach(c=>c.onclick=null);
+  const chosenText = qi.choices[choiceIdx];
+  const correctText = qi.choices[qi.a];
+  const correctFlag = (choiceIdx === qi.a);
+  // mark UI
+  Array.from(choicesDiv.children).forEach(c=>{
+    if(c.innerText === correctText) c.classList.add('correct');
+    if(c.innerText === chosenText && !correctFlag) c.classList.add('wrong');
+  });
+  if(correctFlag){
+    score++;
+    scoreEl.textContent = score;
+  }
+  // record
+  answers.push({
+    q: qi.q,
+    your: chosenText,
+    correct: correctText,
+    correct_flag: correctFlag,
+    ex: qi.ex
+  });
+  // show explanation
+  explainDiv.innerHTML = "<strong>Penjelasan:</strong> <div style='margin-top:6px'><pre>"+(qi.ex||'')+"</pre></div>";
+  explainDiv.classList.remove('hidden');
 }
+
+nextBtn.addEventListener('click', ()=>{
+  // if current unanswered, count as wrong
+  if(answers.length <= cur){
+    const qi = questions[order[cur]];
+    const correctText = qi.choices[qi.a];
+    answers.push({
+      q: qi.q,
+      your: null,
+      correct: correctText,
+      correct_flag: false,
+      ex: qi.ex
+    });
+  }
+  cur++;
+  showQuestion();
+});
+
+skipBtn.addEventListener('click', ()=>{
+  // mark as wrong and next
+  const qi = questions[order[cur]];
+  const correctText = qi.choices[qi.a];
+  answers.push({
+    q: qi.q,
+    your: null,
+    correct: correctText,
+    correct_flag: false,
+    ex: qi.ex
+  });
+  cur++;
+  showQuestion();
+});
+
+endBtn.addEventListener('click', ()=>{
+  if(confirm("Akhiri kuis sekarang dan lihat hasil?")){
+    // mark remaining as unanswered
+    while(answers.length < questions.length){
+      const qi = questions[order[answers.length]];
+      answers.push({
+        q: qi.q,
+        your: null,
+        correct: qi.choices[qi.a],
+        correct_flag: false,
+        ex: qi.ex
+      });
+    }
+    finishQuiz();
+  }
+});
+
+function finishQuiz(){
+  quizArea.classList.add('hidden');
+  resultArea.classList.remove('hidden');
+  restartBtn.classList.remove('hidden');
+  statusEl.textContent = 'Selesai';
+  // compute totals (score already tracked)
+  const total = questions.length;
+  const pct = total ? (score/total)*100 : 0;
+  let grade = 'D';
+  if(pct >= 90) grade = 'A';
+  else if(pct >= 75) grade = 'B';
+  else if(pct >= 60) grade = 'C';
+  summary.innerHTML = `<div>Skor: <strong>${score}</strong> / ${total} — ${pct.toFixed(1)}%</div>`;
+  gradeEl.textContent = `Grade: ${grade}`;
+  // details
+  detailsDiv.innerHTML = '';
+  answers.forEach((a,i)=>{
+    const p = document.createElement('div');
+    p.style.padding = '8px';
+    p.style.borderTop = '1px dashed #eee';
+    p.innerHTML = `<div style="font-weight:600">${i+1}. ${a.q}</div>
+                   <div>Jawabanmu: <strong>${a.your === null ? '— (tidak jawab)' : escapeHtml(a.your)}</strong> • Benar: <strong>${escapeHtml(a.correct)}</strong></div>
+                   <div style="margin-top:6px;color:#444"><em>Penjelasan:</em> ${escapeHtml(a.ex||'')}</div>`;
+    detailsDiv.appendChild(p);
+  });
+}
+
+downloadBtn.addEventListener('click', ()=>{
+  const out = {
+    timestamp: new Date().toISOString(),
+    topic: "Kalam (الكلام)",
+    total: questions.length,
+    score,
+    answers
+  };
+  const blob = new Blob([JSON.stringify(out, null, 2)], {type:'application/json;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = `kalam_result_${(new Date()).toISOString().replace(/[:.]/g,'-')}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+backBtn.addEventListener('click', ()=>{
+  resultArea.classList.add('hidden');
+  quizArea.classList.add('hidden');
+  statusEl.textContent = 'Siap';
+  restartBtn.classList.add('hidden');
+});
+
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
+
 </script>
 </body>
 </html>
