@@ -1,65 +1,91 @@
-FILE: index.html
 
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quiz Bab Kalam & Nahwu</title>
-<style>
-  body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:16px}
-  .container{max-width:900px;margin:0 auto}
-  .card{border:1px solid #ddd;padding:12px;border-radius:8px;margin-bottom:12px}
-  button{padding:8px 12px;border-radius:6px;border:0;background:#0b79d0;color:white}
-  .choice{display:block;margin:6px 0}
-  .correct{background: #e6ffed}
-  .wrong{background: #ffecec}
-</style>
+  <meta charset="UTF-8">
+  <title>Kuis Nahwu</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; margin-bottom: 20px; }
+    select, button { padding: 10px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
+    .question { margin: 20px 0; font-size: 18px; font-weight: bold; }
+    .options label { display: block; padding: 8px; background: #f1f1f1; margin: 6px 0; border-radius: 6px; cursor: pointer; }
+    .options input { margin-right: 10px; }
+    .result { margin-top: 20px; font-size: 20px; font-weight: bold; text-align: center; }
+  </style>
 </head>
 <body>
 <div class="container">
-  <h1>Quiz Bab Kalam & Topik Nahwu</h1>
-  <div id="setup" class="card">
-    <label>Pilih topik: </label>
-    <select id="topicSelect"></select>
-    <label> Jumlah soal: </label>
-    <input id="numQ" type="number" value="10" min="1" max="50" style="width:70px">
-    <button id="startBtn">Mulai</button>
-  </div>  <div id="quiz" style="display:none">
-    <div id="qCard" class="card">
-      <div id="qText"></div>
-      <div id="choices"></div>
-    </div>
-    <div>
-      <button id="nextBtn">Berikutnya</button>
-      <span id="progress"></span>
-    </div>
-  </div>  <div id="result" style="display:none" class="card">
-    <h3>Hasil</h3>
-    <div id="score"></div>
-    <button id="restart">Ulang</button>
+  <h1>📘 Kuis Nahwu</h1>
+  <label for="topic">Pilih Bab:</label>
+  <select id="topic">
+    <option value="kalam">Bab 1: Kalam</option>
+    <option value="kalimah">Bab 2: Kalimah</option>
+    <option value="isim">Bab 3: Ciri-Ciri Isim</option>
+    <option value="fiil">Bab 4: Ciri-Ciri Fi'il</option>
+    <option value="huruf">Bab 5: Ciri-Ciri Huruf</option>
+    <option value="hurufjar">Bab 6: Huruf Jar</option>
+    <option value="hurufqasam">Bab 7: Huruf Qasam</option>
+  </select>
+  <button onclick="startQuiz()">Mulai</button>
+
+  <div id="quiz" style="display:none;">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <button onclick="nextQuestion()">Next</button>
+    <div class="result" id="result"></div>
   </div>
 </div>
+
 <script>
-const QUESTION_BANK = JSON.parse(`" + json.dumps(QUESTION_BANK, ensure_ascii=False).replace("</","<\\/") + "`);
-const topics = Object.keys(QUESTION_BANK);
-const topicSelect = document.getElementById('topicSelect');
-for(const t of topics){
-  const opt = document.createElement('option'); opt.value=t; opt.textContent=t; topicSelect.appendChild(opt);
+let currentTopic = "";
+let currentIndex = 0;
+let score = 0;
+let total = 0;
+
+function startQuiz(){
+  currentTopic = document.getElementById("topic").value;
+  fetch(`/start?topic=${currentTopic}`)
+    .then(r=>r.json())
+    .then(data => {
+      currentIndex = 0;
+      score = 0;
+      total = data.total;
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("result").innerHTML = "";
+      showQuestion();
+    });
 }
-let state = {topic:null, questions:[], idx:0, score:0, answers:[]};function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
 
-function start(){ const t = topicSelect.value; state.topic = t; const n = parseInt(document.getElementById('numQ').value)||10; const bank = QUESTION_BANK[t].slice(); shuffle(bank); state.questions = bank.slice(0, Math.min(n, bank.length)); for(const q of state.questions) q._shuffled = (function(c){ let arr=c.slice(); shuffle(arr); return arr;})(q.choices); state.idx=0; state.score=0; state.answers=[]; document.getElementById('setup').style.display='none'; document.getElementById('quiz').style.display='block'; showQuestion(); }
+function showQuestion(){
+  fetch(`/question?topic=${currentTopic}&index=${currentIndex}`)
+    .then(r=>r.json())
+    .then(q => {
+      document.getElementById("question").innerText = q.q;
+      let opts = "";
+      q.o.forEach((opt,i)=>{
+        opts += `<label><input type='radio' name='opt' value='${i}'> ${opt}</label>`;
+      });
+      document.getElementById("options").innerHTML = opts;
+    });
+}
 
-function showQuestion(){ const q = state.questions[state.idx]; document.getElementById('qText').textContent = (state.idx+1)+'. '+q.q; const chDiv = document.getElementById('choices'); chDiv.innerHTML=''; q._shuffled.forEach((c,i)=>{ const b = document.createElement('button'); b.className='choice'; b.textContent = (i+1)+'. '+c; b.onclick = ()=>pickAnswer(c); chDiv.appendChild(b); }); document.getElementById('progress').textContent = ${state.idx+1}/${state.questions.length}; }
-
-function pickAnswer(choice){ const q = state.questions[state.idx]; const correctText = q.choices[q.a]; const chButtons = Array.from(document.querySelectorAll('.choice')); chButtons.forEach(b=>{ if(b.textContent.endsWith(choice)) b.disabled=true; }); const correctBtn = chButtons.find(b=>b.textContent.endsWith(correctText)); const pickedBtn = chButtons.find(b=>b.textContent.endsWith(choice)); if(choice===correctText){ state.score++; if(pickedBtn) pickedBtn.classList.add('correct'); } else{ if(pickedBtn) pickedBtn.classList.add('wrong'); if(correctBtn) correctBtn.classList.add('correct'); } state.answers.push({q:q.q,your:choice,correct:correctText,ex:q.ex});  show explanation const ex = document.createElement('div'); ex.style.marginTop='8px'; ex.textContent = 'Penjelasan: '+q.ex; document.getElementById('qCard').appendChild(ex); }
-
-document.getElementById('startBtn').onclick = start; document.getElementById('nextBtn').onclick = ()=>{ if(state.idx < state.questions.length-1){ state.idx++; document.getElementById('qCard').innerHTML = '<div id="qText"></div><div id="choices"></div>'; showQuestion(); } else{  document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='block'; document.getElementById('score').textContent = Skor: ${state.score}/${state.questions.length}; show detail const det = document.createElement('div'); state.answers.forEach((a,i)=>{ const p = document.createElement('p'); p.innerHTML = <strong>${i+1}. ${a.q}</strong><br>Jawabanmu: ${a.your||'—'} — benar: ${a.correct}<br>Penjelasan: ${a.ex}; det.appendChild(p); }); document.getElementById('result').appendChild(det); } };
-
-document.getElementById('restart').onclick = ()=>{ location.reload(); }; </script>
-
+function nextQuestion(){
+  let selected = document.querySelector('input[name="opt"]:checked');
+  if(!selected) return alert("Pilih jawaban dulu!");
+  fetch(`/answer?topic=${currentTopic}&index=${currentIndex}&ans=${selected.value}`)
+    .then(r=>r.json())
+    .then(res => {
+      if(res.correct) score++;
+      currentIndex++;
+      if(currentIndex < total){
+        showQuestion();
+      } else {
+        document.getElementById("result").innerHTML = `Skor akhir: ${score}/${total}`;
+      }
+    });
+}
+</script>
 </body>
 </html>
-
